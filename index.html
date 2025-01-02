@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bin To Hex</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: #fff;
+            text-align: center;
+        }
+
+        /* Flexbox layout for input-group */
+        .dark-theme .input-group {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+            /* Wrap elements to the next line when needed */
+        }
+
+        /* Each box will contain the corresponding input and output elements */
+        .dark-theme .input-box {
+            flex: 1 1 45%;
+            /* Allow it to grow, shrink and take 45% of space */
+        }
+
+        /* Help Icon */
+        .dark-theme .help-icon {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #42a5f5;
+        }
+
+        /* Textarea Styling */
+        .dark-theme textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #333;
+            background-color: #333;
+            color: #e0e0e0;
+            border-radius: 5px;
+            resize: vertical;
+            height: 120px;
+        }
+
+        /* Output Styling */
+        .dark-theme .output {
+            margin: 5px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #e0e0e0;
+            padding: 10px;
+            background-color: #2c2c2c;
+            border: 1px solid #444;
+            border-radius: 5px;
+        }
+
+        /* Char Count Styling */
+        .dark-theme .char-count {
+            font-size: 14px;
+            color: #b0b0b0;
+            margin: 5px 0;
+        }
+
+
+
+
+        .cfgspace-input-group {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .cfgspace-input-group label {
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .cfgspace-input-group input {
+            font-size: 14px;
+            padding: 5px;
+            width: 300px;
+        }
+
+        .cfgspace-input-group .output {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .container p {
+            word-wrap: break-word;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 30px;
+        }
+
+        .help-icon {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #000;
+            font-weight: bold;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 20px;
+        }
+
+        .help-icon:hover {
+            background-color: #2575fc;
+            color: #fff;
+            transition: 0.3s;
+        }
+
+        .input-group {
+            position: relative;
+            /* 确保 help-icon 定位到 input-group 的右上角 */
+        }
+
+        .author {
+            margin: 20px;
+            color: greenyellow;
+        }
+
+        .avatr {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 20px;
+            border-radius: 50%;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 40px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .container .container__input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        .container .container__files-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+
+        .container__linux-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+
+
+        #cfgspaceInput {
+            width: 50%;
+        }
+
+        /* Textarea Styling */
+        textarea {
+            width: 100%;
+            height: 60px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            color: #333;
+            background-color: #fff;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        textarea:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.5);
+            outline: none;
+        }
+
+
+        .input-group {
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .input-group input {
+            padding: 12px;
+            font-size: 16px;
+            width: 100%;
+            margin-bottom: 10px;
+            border: 2px solid #fff;
+            border-radius: 5px;
+            background: transparent;
+            color: #fff;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #2575fc;
+            outline: none;
+        }
+
+        .input-group p {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        .green {
+            color: #00FF00 !important;
+            font-weight: bolder;
+            font-size: 28px !important;
+        }
+
+        .green::after {
+            content: ' √';
+            /* 添加 √ 符号 */
+            font-size: 22px;
+            /* 符号大小 */
+            color: #00FF00;
+            /* 符号颜色 */
+            margin-left: 5px;
+            /* 与文字间距 */
+        }
+
+        .output {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .output-coe {
+            margin: 20px;
+            font-size: 20px;
+        }
+
+        .char-count {
+            font-size: 16px;
+            color: #ccc;
+        }
+
+        .input-group label {
+            font-size: 18px;
+            color: #eee;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .input-group {
+                width: 80%;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Bin To Hex</h1>
+    <h2 class="author">By：360 Security Guard</h2>
+    <img class=avatr
+        src="data:image/jpeg;base64,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"
+        alt="">
+    <h3 style="margin-bottom: 20px;">tips：默认按照32位补0</h1>
+
+        <div class="cfgspace-input-group">
+            <textarea type="text" id="cfgspaceInput" placeholder="这里可以是任何值，他帮你判断你现在写到哪个功能区了。"
+                oninput="updateCfgspace()"></textarea>
+            <p id="cfgspaceOutput" class="output-coe"></p>
+        </div>
+        <div class="container">
+            <div class="container__input-wrapper dark-theme">
+                <div class="input-group">
+                    <div class="input-box">
+                        <div class="help-icon" title="rw/rws = 1   rw1c/rw1cs = 3 auth = 0 ">?</div>
+                        <textarea type="text" id="writemaskInput" placeholder="填入你的二进制值 从左到右"
+                            oninput="convertToHex('writemask')"></textarea>
+                        <!-- <p id="writemaskOriginalOutput" class="output">MaskHex：</p> -->
+                        <!-- <p id="rw1cOriginalOutput" class="output">Rw1cHex：</p> -->
+                    </div>
+                    <div class="input-box">
+                        <p id="writemaskReversedOutput" class="output">MaskReverseHex：</p>
+                        <p id="rw1cReversedOutput" class="output">Rw1cReverseHex：</p>
+                    </div>
+                    <div class="input-box">
+                        <p id="charCountMask" class="char-count">Mask：0</p>
+                        <p id="charCountRw1c" class="char-count">Rw1c：0</p>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="container__files-wrapper">
+                <div class="input-group">
+                    <div class="help-icon" title="选择你的tlscan文件，转换为cfgspace.coe ">?</div>
+                    <label for="fileInputTlscan" class="file-label">上传tlscan文件 转换为coe</label>
+                    <input oninput="tlscanToCfgCoe()" type="file" id="fileInputTlscan" accept=".tlscan">
+                </div>
+
+                <div class="input-group">
+                    <div class="help-icon" title="选择你rw提取的bin文件 转换为zerk4k.coe ">?</div>
+                    <label for="fileInputZero4k" class="file-label">上传bin文件 转换为zero4k</label>
+                    <input oninput="binToZero4k()" type="file" id="fileInputZero4k" accept=".bin">
+                </div>
+
+                <div class="input-group">
+                    <div class="help-icon" title="选择你rw提取的bin文件 转换Verilog.v ">?</div>
+                    <label for="fileInputVerilog" class="file-label">上传bin文件 转换为Verilog</label>
+                    <input oninput="binToVerilog()" type="file" id="fileInputVerilog" accept=".bin">
+                </div>
+
+
+                <div class="input-group">
+                    <div class="help-icon" title="选择你的cfgspace.coe文件 转换为tlscan">?</div>
+                    <label for="fileInputCoe" class="file-label">上传coe 转换为tlscan</label>
+                    <input oninput="coeToTlscan()" type="file" id="fileInputCoe" accept=".coe">
+                </div>
+
+            </div>
+            <div class="container__linux-wrapper">
+                <div class="input-group">
+                    <div class="help-icon" title="选择你的mmiotrace_xxx.log文件">?</div>
+                    <label for="filterMmioTraceLog" class="file-label">上传mmio log文件，输入你要提取的设备Hex地址，等待过滤完成</label>
+                    <input oninput="filterAndDownload()" type="file" id="filterMmioTraceLog" accept=".log, .txt">
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // 固定的参数
+            const depth = 256;        // 固定深度
+            const fill = 0;           // 固定填充值 (16进制)
+            const radix = 16;         // 固定进制 (16进制)
+            const width = 32;         // 固定位宽为 32 位
+            const littleEndian = true; // 假设使用小端字节序
+
+
+            // 更新CFGSPACE的值
+            function updateCfgspace() {
+                const cfgspaceInput = document.getElementById('cfgspaceInput').value;
+                const cfgspaceOutput = document.getElementById('cfgspaceOutput');
+                cfgspaceOutput.textContent = `pcieech_cfgspace.coe: ${cfgspaceInput}`;
+
+                // 清空下面两个输入框的值
+                document.getElementById('writemaskInput').value = '';
+                document.getElementById('rw1cInput').value = '';
+
+                // 也清空它们的输出
+                document.getElementById('writemaskOriginalOutput').textContent = 'Hex：';
+                document.getElementById('writemaskReversedOutput').textContent = 'ReverseHex：：';
+                document.getElementById('charCountMask').textContent = 'mask length：0';
+
+                document.getElementById('rw1cOriginalOutput').textContent = 'Hex：';
+                document.getElementById('rw1cReversedOutput').textContent = 'ReverseHex：：';
+                document.getElementById('charCountRw1c').textContent = 'rw1c length：0';
+
+                // 移除绿色样式
+                document.getElementById('charCountMask').classList.remove('green');
+                document.getElementById('charCountRw1c').classList.remove('green');
+            }
+
+            // 二进制转换十六进制
+            function binaryToHex(binary) {
+                // 确保输入是一个有效的二进制字符串
+                if (!/^[01]+$/.test(binary)) {
+                    return '无效的二进制输入';
+                }
+
+                // 补全到32位
+                const paddedBinary = binary.padStart(32, '0');
+
+                // 每4个比特一组，转换为十六进制
+                let hex = '';
+                for (let i = 0; i < paddedBinary.length; i += 4) {
+                    const binGroup = paddedBinary.substring(i, i + 4);
+                    hex += parseInt(binGroup, 2).toString(16).toUpperCase();
+                }
+
+                return hex;
+            }
+
+            // 反转十六进制字符串
+            function reverseHex(hex) {
+                // 检查是否是有效的十六进制字符串
+                if (!/^[0-9A-F]+$/i.test(hex)) {
+                    return '无效的十六进制输入';
+                }
+
+                // 将十六进制字符串按每两个字符一组进行反转
+                // 如果长度是奇数，首先在前面补零以确保偶数长度
+                if (hex.length % 2 !== 0) {
+                    hex = '0' + hex;
+                }
+
+                return hex.match(/.{2}/g).reverse().join('');
+            }
+
+            // tlscan to cfgspace.coe
+            function tlscanToCfgCoe() {
+
+                const fileInputTlscan = document.getElementById('fileInputTlscan');
+                const file = fileInputTlscan.files[0];
+                const nameArr = file.name?.split('.tlscan').filter(f => f)
+                if (!file) {
+                    alert('上传的什么几把？我要tlscan');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const xmlString = event.target.result;
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+                    let bytes = xmlDoc.getElementsByTagName("bytes")[0].textContent.trim().replace(/\s+/g, '');
+
+                    if (bytes.length !== 8192) {
+                        alert(`Expected 8192 characters, but got ${bytes.length}`);
+                        return;
+                    }
+
+                    // Start converting
+                    let coeContent = '';
+                    coeContent += 'memory_initialization_radix=16;\nmemory_initialization_vector=\n';
+
+                    for (let y = 0; y < 16; y++) {
+                        coeContent += `\n`;
+                        for (let x = 0; x < 16; x++) {
+                            if (y === 15 && x === 15) {
+                                // last 
+                                coeContent += `${bytes.slice(0, 8)},${bytes.slice(8, 16)},${bytes.slice(16, 24)},${bytes.slice(24, 32)}\n`;
+                            } else {
+                                coeContent += `${bytes.slice(0, 8)},${bytes.slice(8, 16)},${bytes.slice(16, 24)},${bytes.slice(24, 32)},\n`;
+                            }
+                            bytes = bytes.slice(32);
+                        }
+                    }
+
+                    coeContent += ';\n';
+
+                    // Create a Blob with the COE content
+                    const blob = new Blob([coeContent], { type: 'text/plain' });
+
+                    // Automatically trigger a download
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `${nameArr}_pcileech_cfgspace.coe`;  // Specify the file name for download
+                    link.click();  // Trigger the download
+
+                    alert('转换完成并自动下载!')
+                    // reset  
+                    fileInputTlscan.value = ''
+                };
+
+                reader.readAsText(file);
+            }
+
+            // 分块函数
+            function chunks(arr, n) {
+                const res = [];
+                for (let i = 0; i < arr.length; i += n) {
+                    res.push(arr.slice(i, i + n));
+                }
+                return res;
+            }
+
+            // 转换字节到整数，支持补码表示的负数
+            function wordToInt(word, littleEndian) {
+                let value = 0;
+
+                if (!littleEndian) {
+                    word = word.reverse(); // 如果是大端模式，则反转字节顺序
+                }
+
+                for (let i = 0; i < word.length; i++) {
+                    value += word[i] << (8 * i); // 每个字节左移并累加
+                }
+
+                // 如果符号位为 1，则转换为负数（32 位补码转换）
+                const maxValue = Math.pow(2, 8 * word.length);  // 最大值 2^N
+                if (value >= maxValue / 2) {
+                    value -= maxValue;  // 补码转换成负数
+                }
+
+                return value;
+            }
+
+            // 格式化整数为指定进制的字符串
+            function formatInt(num, radix, padWidth = 0) {
+                const chars = "0123456789abcdefghijklmnopqrstuvwxyz";
+
+                // 如果 num 无效（NaN, null, undefined 等），将其设置为 0
+                if (num == null || isNaN(num)) {
+                    num = 0; // 将无效值视为 0
+                }
+
+                // 如果 num 是负数，我们按照补码进行处理
+                if (num < 0) {
+                    // 对于 32 位系统，使用补码表示负数
+                    num = (num + Math.pow(2, 32)) % Math.pow(2, 32); // 对负数进行补码转换
+                }
+
+                let res = "";
+                do {
+                    res = chars[num % radix] + res;
+                    num = Math.floor(num / radix);
+                } while (num > 0);
+
+                // 填充零至指定的宽度
+                while (res.length < padWidth) {
+                    res = "0" + res;
+                }
+
+                return res;
+            }
+
+            // bin to zero4k
+            function binToZero4k() {
+                const fileInputZero4k = document.getElementById('fileInputZero4k');
+                const file = fileInputZero4k.files[0];
+                const nameArr = file.name?.split('.bin').filter(f => f)
+
+
+                if (!file) {
+                    alert('上传的什么几把？我要bin文件');
+                    return;
+                }
+
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    const data = new Uint8Array(e.target.result);
+                    const padWidth = formatInt(Math.pow(2, width) - 1, radix).length;
+
+                    let output = "";
+                    const currentDate = new Date();
+                    const formattedDate = currentDate.toISOString().replace("T", " ").slice(0, 19); // YYYY-MM-DD HH:MM:SS
+                    output += `; Converted to COE from "${file.name}" on ${formattedDate}\n`;
+                    output += `memory_initialization_radix=${radix};\n`;
+                    output += `memory_initialization_vector=\n\n`;
+
+                    const lines = [];
+
+                    // 将数据分块并格式化为 COE
+                    for (const word of chunks(data, width / 8)) {
+                        const wordInt = wordToInt(word, littleEndian);
+                        const formattedWord = formatInt(wordInt, radix, padWidth);
+                        lines.push(formattedWord);
+                    }
+
+                    // 将每 4 个值分为一组，每组输出为一行
+                    const groupedLines = chunks(lines, 4);
+
+                    // 遍历每组并添加到输出
+                    groupedLines.forEach((line, idx) => {
+                        // 每 16 行插入一个空行
+                        if (idx > 0 && idx % 16 === 0) {
+                            output += "\n";
+                        }
+
+                        // 不添加尾逗号，只加入换行
+                        output += line.join(",");
+
+                        // 如果不是最后一行，添加逗号
+                        if (idx !== groupedLines.length - 1) {
+                            output += ",\n";
+                        }
+                    });
+
+                    // 如果行数不足 depth，填充填充值
+                    let rowsFilled = lines.length;
+                    while (rowsFilled < depth) {
+                        if (rowsFilled > 0) {
+                            output += ",\n";
+                        }
+                        output += formatInt(fill, radix, padWidth);
+                        rowsFilled++;
+                    }
+
+                    output += ";\n";
+
+                    // 生成 Blob 并下载文件
+                    const blob = new Blob([output], { type: "text/plain" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `${nameArr[0]}pcileech_bar_zero4k.coe`; // 固定的文件名
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    alert('转换完成并自动下载!')
+                    // reset  
+                    fileInputZero4k.value = ''
+                };
+
+                reader.onerror = function () {
+                    alert("Error reading the file.");
+                };
+
+                reader.readAsArrayBuffer(file);
+            }
+
+            // bin to Verilog.v
+            function binToVerilog() {
+                const fileInputVerilog = document.getElementById('fileInputVerilog');
+                const file = fileInputVerilog.files[0];
+                const nameArr = file.name?.split('.bin').filter(f => f);
+
+                if (!file) {
+                    alert('上传的什么几把？我要bin文件');
+                    return;
+                }
+
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    const buffer = e.target.result;
+                    const view = new DataView(buffer);
+                    let output = 'module pcileech_bar_impl_bar_rw_tlp(\n    input               rst,\n    input               clk,\n    // incoming BAR writes:\n    input [31:0]        wr_addr,\n    input [3:0]         wr_be,\n    input [31:0]        wr_data,\n    input               wr_valid,\n    // incoming BAR reads:\n    input  [87:0]       rd_req_ctx,\n    input  [31:0]       rd_req_addr,\n    input               rd_req_valid,\n    input  [31:0]       base_address_register,\n    // outgoing BAR read replies:\n    output reg [87:0]   rd_rsp_ctx,\n    output reg [31:0]   rd_rsp_data,\n    output reg          rd_rsp_valid\n);\n                     \n    reg [87:0]      drd_req_ctx;\n    reg [31:0]      drd_req_addr;\n    reg             drd_req_valid;\n                  \n    reg [31:0]      dwr_addr;\n    reg [31:0]      dwr_data;\n    reg             dwr_valid;\n               \n    reg [31:0]      data_32;\n              \n    time number = 0;\n                  \n    always @ (posedge clk) begin\n        if (rst)\n            number <= 0;\n               \n        number          <= number + 1;\n        drd_req_ctx     <= rd_req_ctx;\n        drd_req_valid   <= rd_req_valid;\n        dwr_valid       <= wr_valid;\n        drd_req_addr    <= rd_req_addr;\n        rd_rsp_ctx      <= drd_req_ctx;\n        rd_rsp_valid    <= drd_req_valid;\n        dwr_addr        <= wr_addr;\n        dwr_data        <= wr_data;\n\n';
+                    output += '        if (drd_req_valid) begin\n            case (({drd_req_addr[31:24], drd_req_addr[23:16], drd_req_addr[15:08], drd_req_addr[07:00]} - (base_address_register & 32\'hFFFFFFF0)) & 32\'h0FFF)\n';
+
+                    // 读取二进制文件并转换为 Verilog 代码
+                    for (let offset = 0; offset < Math.min(buffer.byteLength, 0x1000); offset += 4) {
+                        const value = view.getUint32(offset, true); // little-endian
+                        if (value !== 0) {
+                            const hexOffset = offset.toString(16).padStart(4, '0').toUpperCase();
+                            const hexValue = value.toString(16).padStart(8, '0').toUpperCase();
+                            output += `        16'h${hexOffset} : rd_rsp_data <= 32'h${hexValue};\n`;
+                        }
+                    }
+
+                    output += '        default: rd_rsp_data <= 32\'h00000000;\n    endcase\n        end else if (dwr_valid) begin\n            case (({dwr_addr[31:24], dwr_addr[23:16], dwr_addr[15:08], dwr_addr[07:00]} - (base_address_register & 32\'hFFFFFFF0)) & 32\'h0FFF)\n                //Dont be scared\n            endcase\n        end else begin\n            rd_rsp_data <= 32\'h00000000;\n        end\n    end\n            \nendmodule\n';
+
+                    // 生成 Blob 并下载文件
+                    const blob = new Blob([output], { type: "text/plain" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `${nameArr[0]}_pcileech_bar_impl.v`; // 固定的文件名
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    alert('转换完成并自动下载!')
+
+                    // reset  
+                    fileInputVerilog.value = ''
+                };
+
+                reader.onerror = function () {
+                    alert("Error reading the file.");
+                };
+
+                reader.readAsArrayBuffer(file);
+            }
+
+            // coe to tlscan
+            function coeToTlscan() {
+                const fileInputCoe = document.getElementById('fileInputCoe');
+                const file = fileInputCoe.files[0];
+                const nameArr = file.name?.split('.coe').filter(f => f);
+                if (!file) {
+                    alert('上传的文件不对，我要COE文件！');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const coeContent = event.target.result;
+
+                    // 解析COE文件
+                    const lines = coeContent.split('\n');
+
+                    // 忽略 COE 文件的头部信息
+                    const memoryRadixLine = lines.find(line => line.includes('memory_initialization_radix'));
+                    const memoryVectorLine = lines.find(line => line.includes('memory_initialization_vector'));
+
+                    // 检查是否为COE文件
+                    if (!memoryRadixLine || !memoryVectorLine) {
+                        alert('这不是有效的COE文件！');
+                        return;
+                    }
+
+                    // 提取数据部分
+                    let hexData = '';
+                    lines.forEach(line => {
+                        if (line && !line.startsWith(';') && !line.startsWith('memory_initialization')) {
+                            // 去除逗号，并移除多余的空格
+                            hexData += line.replace(/,/g, '').replace(/\s+/g, '');
+                        }
+                    });
+
+                    // 开始构建tlscan格式的内容
+                    let tlscanContent = '<devices>\n';
+                    tlscanContent += '    <device device="0x00" bus="0x00" function="0x00" type="pcie">\n';
+                    tlscanContent += '        <config_space>\n';
+                    tlscanContent += '            <bytes>\n';
+
+                    // 每行包含32个字节（64个字符），每个字节之间用空格分隔
+                    for (let i = 0; i < hexData.length; i += 64) {
+                        // 提取每行的32字节（64个字符）
+                        const hexLine = hexData.slice(i, i + 64);
+
+                        // 每2个字符为1个字节，字节之间用空格分隔
+                        const formattedLine = hexLine.match(/.{1,2}/g).join(' ');
+
+                        // 将每行添加到 tlscanContent
+                        tlscanContent += `                ${formattedLine}\n`;
+                    }
+
+                    // 结束配置部分
+                    tlscanContent += '            </bytes>\n';
+                    tlscanContent += '        </config_space>\n';
+                    tlscanContent += '    </device>\n';
+                    tlscanContent += '</devices>\n';
+
+                    // 创建 Blob 对象并触发下载
+                    const blob = new Blob([tlscanContent], { type: 'text/xml' });
+
+                    // 自动触发下载
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `${nameArr}_pcileech_cfgspace.tlscan`;  // 设置下载文件名
+                    link.click();  // 触发下载
+
+                    alert('转换完成并自动下载！');
+
+                    // 重置输入框
+                    fileInputCoe.value = '';
+                };
+
+                reader.readAsText(file);
+            }
+
+
+
+            // mmio trace log 过滤掉其他无用信息
+            // 过滤并下载文件
+            function filterAndDownload() {
+                const fileInput = document.getElementById('filterMmioTraceLog');
+
+                if (!fileInput.files[0]) {
+                    alert("上传正确的mmiotrace.log 文件");
+                    return;
+                }
+
+                const file = fileInput.files[0];
+
+                // 弹出输入框让用户输入十六进制地址
+                const hexAddress = prompt("输入你想保留的十六进制地址 例如：0x6235284").trim();
+
+                if (!hexAddress) {
+                    alert("正确输入，否则无法过滤.");
+                    return;
+                }
+
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    const content = e.target.result;
+                    const lines = content.split('\n');
+                    const filteredLines = [];
+
+                    // 循环遍历文件内容并过滤
+                    for (const line of lines) {
+                        if (line.startsWith('VERSION') || line.startsWith('PCIDEV')) {
+                            filteredLines.push(line);
+                        } else if (line.toLowerCase().includes(hexAddress.toLowerCase())) {
+                            filteredLines.push(line);
+                        }
+                    }
+
+                    // 获取原始文件名和时间戳
+                    const originalFileName = file.name.split('.').slice(0, -1).join('.'); // 移除扩展名
+                    const timestamp = Date.now();
+                    const newFileName = `${originalFileName}_${timestamp}.log`; // 使用原文件名和时间戳
+
+                    // 将过滤后的内容保存为新的文件
+                    const filteredContent = filteredLines.join('\n');
+                    const blob = new Blob([filteredContent], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = newFileName; // 新文件名为原文件名+时间戳
+                    a.click();
+                    URL.revokeObjectURL(url);
+
+                    alert('已过滤完成，确认后自动下载!');
+
+                    // Reset file input
+                    fileInput.value = '';
+                };
+
+                reader.onerror = function () {
+                    alert("异常，读取文件错误.");
+                };
+
+                reader.readAsText(file);
+            }
+
+
+
+
+            function convertToHex() {
+                const binaryInput = document.getElementById('writemaskInput').value;
+                const maskCount = document.getElementById('charCountMask')
+                const rw1cCount = document.getElementById('charCountRw1c')
+                // 检查输入是否为空
+                if (binaryInput === '') {
+                    // document.getElementById('writemaskOriginalOutput').textContent = 'MaskHex：';
+                    document.getElementById('writemaskReversedOutput').textContent = 'MaskReverseHex：';
+                    // document.getElementById('rw1cOriginalOutput').textContent = 'Rw1cHex：';
+                    document.getElementById('rw1cReversedOutput').textContent = 'Rw1cReverseHex：';
+                    document.getElementById('charCountMask').textContent = 'Mask：0';
+                    document.getElementById('charCountRw1c').textContent = 'Rw1c：0';
+                    return;
+                }
+
+                // 分别按照 rw 和 rw1c 规则生成二进制值
+                const rwBinary = binaryInput.split('').map(bit => (bit === '3' || bit === '1' ? '1' : '0')).join('');
+                const rw1cBinary = binaryInput.split('').map(bit => (bit === '3' ? '1' : '0')).join('');
+
+                // 将二进制值转换为十六进制
+                const hexRw = binaryToHex(rwBinary);
+                const hexRw1c = binaryToHex(rw1cBinary);
+
+                // 反转十六进制
+                const reversedHexRw = reverseHex(hexRw);
+                const reversedHexRw1c = reverseHex(hexRw1c);
+
+                // 更新UI显示
+                // document.getElementById('writemaskOriginalOutput').textContent = 'MaskHex：' + hexRw;
+                document.getElementById('writemaskReversedOutput').textContent = 'MaskReverseHex：' + reversedHexRw;
+                // document.getElementById('rw1cOriginalOutput').textContent = 'Rw1cHex：' + hexRw1c;
+                document.getElementById('rw1cReversedOutput').textContent = 'Rw1cReverseHex：' + reversedHexRw1c;
+
+                // 更新 length
+                document.getElementById('charCountMask').textContent = 'Mask：' + rwBinary.length;
+                document.getElementById('charCountRw1c').textContent = 'Rw1c：' + rw1cBinary.length;
+
+                rw1cCount.className = rw1cBinary.length === 32 ? 'green' : ''
+                maskCount.className = rwBinary.length === 32 ? 'green' : ''
+            }
+
+        </script>
+</body>
+
+</html>
